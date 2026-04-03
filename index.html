@@ -444,10 +444,26 @@
         }
         
         #text {
-            font-size: 18px;
-            line-height: 2;
+            font-size: 16px;
+            line-height: 1.8;
             color: #333;
             max-width: 400px;
+        }
+
+        /* 手机端字体调整 */
+        @media screen and (max-width: 768px) {
+            #text {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+        }
+
+        /* 竖屏时字体更小 */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            #text {
+                font-size: 12px;
+                line-height: 1.4;
+            }
         }
         
         #text .para {
