@@ -1225,10 +1225,85 @@
             }
         });
 
+        // 预加载所有图片，显示封面
+        function preloadImages() {
+            const images = Object.values(sceneImages);
+            let loaded = 0;
+            const total = images.length;
+            
+            // 显示封面和加载提示
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading';
+            loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a1a;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;';
+            loadingDiv.innerHTML = `
+                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
+                <div style="color:#fff;font-size:14px;margin-bottom:10px;">加载中... <span id="loading-progress">0 / ${total}</span></div>
+                <div style="color:#666;font-size:12px;">请稍候，精彩即将呈现</div>
+            `;
+            document.body.appendChild(loadingDiv);
+            
+            return new Promise((resolve) => {
+                if (images.length === 0) {
+                    loadingDiv.remove();
+                    resolve();
+                    return;
+                }
+                
+                images.forEach(src => {
+                    const img = new Image();
+                    img.onload = () => {
+                        loaded++;
+                        const progressEl = document.getElementById('loading-progress');
+                        if (progressEl) progressEl.textContent = loaded + ' / ' + total;
+                        if (loaded >= total) {
+                            // 显示点击提示
+                            loadingDiv.innerHTML = `
+                                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
+                                <div style="color:#999;font-size:14px;">点击任意处开始阅读</div>
+                            `;
+                            loadingDiv.style.cursor = 'pointer';
+                            loadingDiv.onclick = () => {
+                                loadingDiv.style.opacity = '0';
+                                loadingDiv.style.transition = 'opacity 0.5s';
+                                setTimeout(() => {
+                                    loadingDiv.remove();
+                                    currentIndex = 1; // 直接进入第一章
+                                    resolve();
+                                }, 500);
+                            };
+                        }
+                    };
+                    img.onerror = () => {
+                        loaded++;
+                        console.log('Failed to load:', src);
+                        if (loaded >= total) {
+                            loadingDiv.innerHTML = `
+                                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
+                                <div style="color:#999;font-size:14px;">点击任意处开始阅读</div>
+                            `;
+                            loadingDiv.style.cursor = 'pointer';
+                            loadingDiv.onclick = () => {
+                                loadingDiv.style.opacity = '0';
+                                loadingDiv.style.transition = 'opacity 0.5s';
+                                setTimeout(() => {
+                                    loadingDiv.remove();
+                                    currentIndex = 1; // 直接进入第一章
+                                }, 500);
+                            };
+                        }
+                    };
+                    img.src = src;
+                });
+            });
+        }
+
         // 初始化 - 延迟执行确保DOM完全加载
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                updateScene();
+                // 先预加载所有图片，再显示内容
+                preloadImages().then(() => {
+                    updateScene();
+                });
             } catch (e) {
                 console.error('初始化错误:', e);
                 document.body.innerHTML = '<div style="padding:20px;color:red;">加载出错: ' + e.message + '</div>';
