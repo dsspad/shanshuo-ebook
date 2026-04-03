@@ -655,18 +655,16 @@
             left: 0;
             z-index: 2;
             background: transparent;
-            justify-content: flex-end;
-            align-items: flex-end;
-            padding: 0 50px 100px 0;
+            justify-content: center;
+            align-items: center;
             pointer-events: none;
         }
         .fullscreen #right-page > * {
             pointer-events: auto;
         }
         .fullscreen #text {
-            max-width: 45%;
-            margin-left: auto;
-            margin-right: 0;
+            max-width: 80%;
+            text-align: center;
         }
         .fullscreen #page-num {
             position: absolute;
@@ -963,6 +961,31 @@
                 // 显示悬浮文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
+
+                // 点击图片左右翻页
+                const leftPageEl = document.getElementById('left-page');
+                if (leftPageEl) {
+                    leftPageEl.onclick = function(e) {
+                        const rect = leftPageEl.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const width = rect.width;
+                        if (x < width * 0.5) {
+                            // 左侧：上一页
+                            if (currentIndex > 0) {
+                                currentIndex--;
+                                leftPageEl.onclick = null;
+                                updateScene();
+                            }
+                        } else {
+                            // 右侧：下一页
+                            if (currentIndex < script.length - 1) {
+                                currentIndex++;
+                                leftPageEl.onclick = null;
+                                updateScene();
+                            }
+                        }
+                    };
+                }
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
@@ -1018,8 +1041,8 @@
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除点击事件
                 book.onclick = null;
-                // 恢复 right-page 点击
-                rightPage.style.pointerEvents = '';
+                const leftPageEl = document.getElementById('left-page');
+                if (leftPageEl) leftPageEl.onclick = null;
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
