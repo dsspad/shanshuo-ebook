@@ -502,6 +502,22 @@
             cursor: w-resize;
             z-index: 10;
         }
+
+        /* 返回封面按钮 */
+        #back-to-cover {
+            display: none;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        #back-to-cover:hover {
+            background: #555;
+        }
         
         #text .para {
             opacity: 0;
@@ -708,6 +724,7 @@
             <div id="hint">点击右侧下一页，左侧上一页</div>
             <div id="page-num">1 / 50</div>
             <div id="text-only-prev" class="text-only-prev" style="display:none;"></div>
+            <button id="back-to-cover" style="display:none; margin-top:20px; padding:8px 16px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:12px;">返回封面</button>
         </div>
     </div>
 
@@ -855,6 +872,16 @@
                 const prevBtn = document.getElementById('text-only-prev');
                 if (prevBtn) prevBtn.style.display = 'block';
 
+                // 最后一页显示返回封面按钮
+                const backBtn = document.getElementById('back-to-cover');
+                if (backBtn) {
+                    if (currentIndex === script.length - 1) {
+                        backBtn.style.display = 'block';
+                    } else {
+                        backBtn.style.display = 'none';
+                    }
+                }
+
                 // 更新右栏文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
@@ -862,6 +889,9 @@
                 // 隐藏上一页点击区域
                 const prevBtn = document.getElementById('text-only-prev');
                 if (prevBtn) prevBtn.style.display = 'none';
+                // 隐藏返回封面按钮
+                const backBtn = document.getElementById('back-to-cover');
+                if (backBtn) backBtn.style.display = 'none';
                 // 清除封面点击事件
                 book.onclick = null;
             }
@@ -1074,6 +1104,16 @@
                     currentIndex--;
                     updateScene();
                 }
+            });
+        }
+
+        // 返回封面按钮
+        const backToCover = document.getElementById('back-to-cover');
+        if (backToCover) {
+            backToCover.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentIndex = 0;
+                updateScene();
             });
         }
 
