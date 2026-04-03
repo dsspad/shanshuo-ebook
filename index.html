@@ -893,7 +893,8 @@
                 const backBtn = document.getElementById('back-to-cover');
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除封面点击事件
-                book.onclick = null;
+                const leftPageEl = document.getElementById('left-page');
+                if (leftPageEl) leftPageEl.onclick = null;
             }
             // 处理文字在右场景
             else if (scene.type === 'text-right') {
@@ -974,15 +975,21 @@
                 speakerEl.textContent = '';
                 textEl.textContent = '';
 
-                // 封面点击下一页 - 直接绑定到 book
-                book.onclick = function(e) {
-                    e.stopPropagation();
-                    if (currentIndex < script.length - 1) {
-                        currentIndex++;
-                        book.onclick = null; // 清除事件
-                        updateScene();
+                // 封面点击下一页 - 绑定到 left-page
+                setTimeout(() => {
+                    const leftPageEl = document.getElementById('left-page');
+                    if (leftPageEl) {
+                        leftPageEl.onclick = function(e) {
+                            e.stopPropagation();
+                            console.log('Cover left-page clicked');
+                            if (currentIndex < script.length - 1) {
+                                currentIndex++;
+                                leftPageEl.onclick = null;
+                                updateScene();
+                            }
+                        };
                     }
-                };
+                }, 100);
             }
             else {
                 // 更新左栏场景 - 优先使用图片
