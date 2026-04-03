@@ -927,23 +927,24 @@
         function typeText(text) {
             isTyping = false;
             textEl.innerHTML = '';
-            
-            // 将文本按句号分割成段落
-            const paragraphs = text.split(/([。！？]+)/).filter(p => p.trim());
-            
-            // 重新组合成完整的句子
-            const sentences = [];
-            for (let i = 0; i < paragraphs.length; i += 2) {
-                const sentence = paragraphs[i] + (paragraphs[i + 1] || '');
-                if (sentence.trim()) sentences.push(sentence.trim());
-            }
-            
+
+            // 按换行符分割段落
+            const lines = text.split('\n');
+
             // 创建段落元素，直接显示
-            sentences.forEach((sentence) => {
-                const para = document.createElement('span');
-                para.className = 'para visible';
-                para.textContent = sentence;
-                textEl.appendChild(para);
+            lines.forEach((line, index) => {
+                if (line.trim()) {
+                    const para = document.createElement('div');
+                    para.className = 'para visible';
+                    para.style.marginBottom = '0.5em';
+                    para.textContent = line.trim();
+                    textEl.appendChild(para);
+                } else if (index < lines.length - 1) {
+                    // 空行添加间距
+                    const br = document.createElement('div');
+                    br.style.height = '1em';
+                    textEl.appendChild(br);
+                }
             });
         }
 
