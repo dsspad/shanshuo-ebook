@@ -963,35 +963,6 @@
                 // 显示悬浮文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
-
-                // 禁用 right-page 点击
-                rightPage.style.pointerEvents = 'none';
-
-                // fullscreen 场景点击翻页：左侧30%上一页，右侧70%下一页
-                book.onclick = function(e) {
-                    const rect = book.getBoundingClientRect();
-                    const relativeX = e.clientX - rect.left;
-                    const width = rect.width;
-                    const ratio = relativeX / width;
-                    console.log('Click at:', relativeX, 'width:', width, 'ratio:', ratio);
-                    if (ratio < 0.3) {
-                        console.log('Left 30%, go prev');
-                        if (currentIndex > 0) {
-                            currentIndex--;
-                            book.onclick = null;
-                            rightPage.style.pointerEvents = '';
-                            updateScene();
-                        }
-                    } else {
-                        console.log('Right 70%, go next');
-                        if (currentIndex < script.length - 1) {
-                            currentIndex++;
-                            book.onclick = null;
-                            rightPage.style.pointerEvents = '';
-                            updateScene();
-                        }
-                    }
-                };
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
