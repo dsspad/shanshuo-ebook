@@ -962,10 +962,6 @@
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
-                // 禁用 right-page 点击，避免冲突
-                rightPage.style.pointerEvents = 'none';
-                console.log('Fullscreen: rightPage pointerEvents set to none');
-
                 // 点击图片左右翻页
                 const leftPageEl = document.getElementById('left-page');
                 if (leftPageEl) {
@@ -978,7 +974,6 @@
                             if (currentIndex > 0) {
                                 currentIndex--;
                                 leftPageEl.onclick = null;
-                                rightPage.style.pointerEvents = '';
                                 updateScene();
                             }
                         } else {
@@ -986,7 +981,6 @@
                             if (currentIndex < script.length - 1) {
                                 currentIndex++;
                                 leftPageEl.onclick = null;
-                                rightPage.style.pointerEvents = '';
                                 updateScene();
                             }
                         }
@@ -1049,8 +1043,6 @@
                 book.onclick = null;
                 const leftPageEl = document.getElementById('left-page');
                 if (leftPageEl) leftPageEl.onclick = null;
-                // 恢复 right-page 点击
-                rightPage.style.pointerEvents = '';
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
@@ -1125,7 +1117,13 @@
 
         // 下一页
         rightPage.addEventListener('click', (e) => {
-            console.log('rightPage clicked, currentIndex:', currentIndex, 'type:', script[currentIndex]?.type);
+            const scene = script[currentIndex];
+            console.log('rightPage clicked, currentIndex:', currentIndex, 'type:', scene?.type);
+            // fullscreen 场景使用图片点击翻页，禁用 right-page 点击
+            if (scene.type === 'fullscreen') {
+                console.log('Fullscreen scene, ignoring rightPage click');
+                return;
+            }
             if (isTyping) {
                 // 如果正在渐显，直接显示完整文字
                 const paras = textEl.querySelectorAll('.para');
@@ -1139,14 +1137,19 @@
 
         // 上一页
         leftPage.addEventListener('click', (e) => {
-            console.log('leftPage clicked, currentIndex:', currentIndex, 'type:', script[currentIndex]?.type);
-            // 封面场景点击下一页
             const scene = script[currentIndex];
+            console.log('leftPage clicked, currentIndex:', currentIndex, 'type:', scene?.type);
+            // 封面场景点击下一页
             if (scene.type === 'cover') {
                 if (currentIndex < script.length - 1) {
                     currentIndex++;
                     updateScene();
                 }
+                return;
+            }
+            // fullscreen 场景使用图片点击翻页，禁用 leftPage 默认点击
+            if (scene.type === 'fullscreen') {
+                console.log('Fullscreen scene, ignoring leftPage click');
                 return;
             }
             if (currentIndex > 0) {
