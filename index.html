@@ -657,6 +657,15 @@
             justify-content: flex-end;
             padding-bottom: 100px;
         }
+        .fullscreen #page-num {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 10px;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
         .fullscreen .scene-container {
             width: 100%;
             height: 100%;
@@ -945,16 +954,18 @@
                 typeText(scene.text);
 
                 // 全屏场景点击左侧返回上一页
-                book.onclick = function(e) {
-                    const rect = book.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    // 点击左侧30%区域返回上一页
-                    if (x < rect.width * 0.3 && currentIndex > 0) {
-                        currentIndex--;
-                        book.onclick = null;
-                        updateScene();
-                    }
-                };
+                const leftPageEl = document.getElementById('left-page');
+                if (leftPageEl) {
+                    leftPageEl.onclick = function(e) {
+                        e.stopPropagation();
+                        console.log('Fullscreen left-page clicked');
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            leftPageEl.onclick = null;
+                            updateScene();
+                        }
+                    };
+                }
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
@@ -1008,8 +1019,10 @@
                 // 隐藏返回封面按钮
                 const backBtn = document.getElementById('back-to-cover');
                 if (backBtn) backBtn.style.display = 'none';
-                // 清除封面点击事件
+                // 清除点击事件
                 book.onclick = null;
+                const leftPageEl = document.getElementById('left-page');
+                if (leftPageEl) leftPageEl.onclick = null;
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
