@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="landscape">
     <title>山说 · 第一章</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,6 +16,28 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        /* 竖屏提示 */
+        @media screen and (orientation: portrait) {
+            body::before {
+                content: '请横屏阅读';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: #1a1a1a;
+                color: #fff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                z-index: 9999;
+            }
+            #book {
+                display: none !important;
+            }
         }
         
         #book {
@@ -964,6 +987,15 @@
                 leftPage.click();
             }
         });
+
+        // 强制横屏
+        function forceLandscape() {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+        }
+        forceLandscape();
+        window.addEventListener('orientationchange', forceLandscape);
 
         // 初始化
         updateScene();
