@@ -1033,7 +1033,8 @@
         }
 
         // 下一页
-        rightPage.addEventListener('click', () => {
+        rightPage.addEventListener('click', (e) => {
+            console.log('rightPage clicked, currentIndex:', currentIndex, 'type:', script[currentIndex]?.type);
             if (isTyping) {
                 // 如果正在渐显，直接显示完整文字
                 const paras = textEl.querySelectorAll('.para');
@@ -1046,7 +1047,8 @@
         });
 
         // 上一页
-        leftPage.addEventListener('click', () => {
+        leftPage.addEventListener('click', (e) => {
+            console.log('leftPage clicked, currentIndex:', currentIndex, 'type:', script[currentIndex]?.type);
             // 封面场景点击下一页
             const scene = script[currentIndex];
             if (scene.type === 'cover') {
@@ -1067,11 +1069,17 @@
         if (textOnlyPrev) {
             textOnlyPrev.addEventListener('click', (e) => {
                 e.stopPropagation();
+                console.log('text-only-prev clicked, currentIndex:', currentIndex);
                 if (currentIndex > 0) {
                     currentIndex--;
                     updateScene();
                 }
             });
+        }
+
+        // 调试：显示点击区域（开发时可见）
+        if (textOnlyPrev) {
+            textOnlyPrev.style.background = 'rgba(255,0,0,0.1)'; // 淡红色半透明
         }
 
         // 键盘导航
