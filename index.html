@@ -969,10 +969,14 @@
                 if (leftPageEl) {
                     leftPageEl.onclick = function(e) {
                         const rect = leftPageEl.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
+                        const clickX = e.clientX;
+                        const leftEdge = rect.left;
                         const width = rect.width;
-                        if (x < width * 0.3) {
+                        const relativeX = clickX - leftEdge;
+                        console.log('Fullscreen clicked:', relativeX, '/', width, '=', relativeX/width);
+                        if (relativeX < width * 0.3) {
                             // 左侧30%：上一页
+                            console.log('Going to prev page');
                             if (currentIndex > 0) {
                                 currentIndex--;
                                 leftPageEl.onclick = null;
@@ -980,6 +984,7 @@
                             }
                         } else {
                             // 右侧70%：下一页
+                            console.log('Going to next page');
                             if (currentIndex < script.length - 1) {
                                 currentIndex++;
                                 leftPageEl.onclick = null;
