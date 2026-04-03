@@ -591,6 +591,7 @@
             height: 100%;
             position: relative;
             z-index: 1;
+            cursor: pointer;
         }
         .cover-fullscreen #right-page {
             display: none;
@@ -937,6 +938,15 @@
 
         // 上一页
         leftPage.addEventListener('click', () => {
+            // 封面场景点击下一页
+            const scene = script[currentIndex];
+            if (scene.type === 'cover') {
+                if (currentIndex < script.length - 1) {
+                    currentIndex++;
+                    updateScene();
+                }
+                return;
+            }
             if (currentIndex > 0) {
                 currentIndex--;
                 updateScene();
