@@ -965,34 +965,26 @@
                 typeText(scene.text);
 
                 // fullscreen 场景点击翻页：左侧30%上一页，右侧70%下一页
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) {
-                    leftPageEl.onclick = function(e) {
-                        const rect = leftPageEl.getBoundingClientRect();
-                        const clickX = e.clientX;
-                        const leftEdge = rect.left;
-                        const width = rect.width;
-                        const relativeX = clickX - leftEdge;
-                        console.log('Fullscreen clicked:', relativeX, '/', width, '=', relativeX/width);
-                        if (relativeX < width * 0.3) {
-                            // 左侧30%：上一页
-                            console.log('Going to prev page');
-                            if (currentIndex > 0) {
-                                currentIndex--;
-                                leftPageEl.onclick = null;
-                                updateScene();
-                            }
-                        } else {
-                            // 右侧70%：下一页
-                            console.log('Going to next page');
-                            if (currentIndex < script.length - 1) {
-                                currentIndex++;
-                                leftPageEl.onclick = null;
-                                updateScene();
-                            }
+                book.onclick = function(e) {
+                    const rect = book.getBoundingClientRect();
+                    const relativeX = e.clientX - rect.left;
+                    const width = rect.width;
+                    if (relativeX < width * 0.3) {
+                        // 左侧30%：上一页
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            book.onclick = null;
+                            updateScene();
                         }
-                    };
-                }
+                    } else {
+                        // 右侧70%：下一页
+                        if (currentIndex < script.length - 1) {
+                            currentIndex++;
+                            book.onclick = null;
+                            updateScene();
+                        }
+                    }
+                };
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
@@ -1048,8 +1040,6 @@
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除点击事件
                 book.onclick = null;
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) leftPageEl.onclick = null;
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
