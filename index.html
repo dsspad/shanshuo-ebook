@@ -992,9 +992,30 @@
                 }
                 cssScene.style.display = 'none';
                 
-                // 右页显示文字
-                speakerEl.textContent = scene.speaker || '';
-                typeText(scene.text);
+                // 右页显示文字 - 等待图片加载完成后再显示
+                if (sceneImage.complete && sceneImage.naturalWidth !== 0) {
+                    // 图片已缓存，直接显示文字
+                    speakerEl.textContent = scene.speaker || '';
+                    typeText(scene.text);
+                } else {
+                    // 图片未加载，等待加载完成
+                    speakerEl.textContent = '';
+                    textEl.textContent = '';
+                    sceneImage.onload = function() {
+                        // 延迟500ms显示文字，确保图片渲染完成
+                        setTimeout(() => {
+                            speakerEl.textContent = scene.speaker || '';
+                            typeText(scene.text);
+                        }, 500);
+                    };
+                }
+                
+                // 预加载下一页图片
+                const nextScene = script[currentIndex + 1];
+                if (nextScene && nextScene.scene && sceneImages[nextScene.scene]) {
+                    const nextImg = new Image();
+                    nextImg.src = sceneImages[nextScene.scene];
+                }
             }
             // 处理全屏画面+文字悬浮
             else if (scene.type === 'fullscreen') {
