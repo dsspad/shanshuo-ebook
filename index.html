@@ -588,6 +588,33 @@
             font-size: 1.1em;
             line-height: 1.8;
         }
+
+        /* 封面场景 - 图片铺满整个页面 */
+        .cover-fullscreen #book {
+            position: relative;
+        }
+        .cover-fullscreen #left-page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .cover-fullscreen #right-page {
+            display: none;
+        }
+        .cover-fullscreen .scene-container {
+            width: 100%;
+            height: 100%;
+        }
+        .cover-fullscreen #scene-image {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            max-height: none;
+        }
         .fullscreen #speaker {
             color: #fff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.8);
@@ -613,7 +640,7 @@
     <script>
         // 剧本数据
         const script = [
-            { type: "scene", scene: "cover", speaker: "", text: "" },
+            { type: "cover", scene: "cover", speaker: "", text: "" },
             { type: "text-only", speaker: "", text: "第一章" },
             { type: "scene", scene: "scene01", speaker: "", text: "" },
             { type: "scene", scene: "scene00", speaker: "", text: "" },
@@ -737,7 +764,7 @@
             pageNumEl.textContent = `${currentIndex + 1} / ${script.length}`;
             
             // 清除所有特殊布局类
-            book.classList.remove('text-only', 'cross-page-text-left', 'cross-page-image-left', 'fullscreen');
+            book.classList.remove('text-only', 'text-right', 'cross-page-text-left', 'cross-page-image-left', 'fullscreen', 'cover-fullscreen');
             
             // 重置 fullscreen 时的图片样式
             sceneImage.style.objectFit = '';
@@ -800,7 +827,7 @@
             else if (scene.type === 'fullscreen') {
                 book.classList.add('fullscreen');
                 cssScene.style.display = 'none';
-                
+
                 // 显示全屏图片
                 if (scene.scene && sceneImages[scene.scene]) {
                     sceneImage.src = sceneImages[scene.scene];
@@ -809,10 +836,25 @@
                     sceneImage.style.width = '100%';
                     sceneImage.style.height = '100%';
                 }
-                
+
                 // 显示悬浮文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
+            }
+            // 处理封面场景 - 图片铺满整个页面
+            else if (scene.type === 'cover') {
+                book.classList.add('cover-fullscreen');
+                cssScene.style.display = 'none';
+
+                // 显示封面图片
+                if (scene.scene && sceneImages[scene.scene]) {
+                    sceneImage.src = sceneImages[scene.scene];
+                    sceneImage.classList.add('active');
+                }
+
+                // 封面无文字
+                speakerEl.textContent = '';
+                textEl.textContent = '';
             }
             else {
                 // 更新左栏场景 - 优先使用图片
