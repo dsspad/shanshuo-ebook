@@ -22,7 +22,7 @@
         }
 
         /* 竖屏时保持3:2比例缩小显示，并显示建议提示 */
-        @media screen and (orientation: portrait) {
+        @media screen and (orientation: portrait) and (max-width: 768px) {
             body::before {
                 content: '建议横屏阅读以获得最佳体验';
                 position: fixed;
@@ -38,10 +38,10 @@
                 pointer-events: none;
             }
             #book {
-                width: 90vw;
+                width: 95vw;
                 height: auto;
                 aspect-ratio: 3 / 2;
-                max-height: 60vh;
+                max-height: 70vh;
                 margin-top: 50px;
             }
         }
