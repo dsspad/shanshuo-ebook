@@ -964,6 +964,9 @@
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
+                // 禁用 right-page 点击
+                rightPage.style.pointerEvents = 'none';
+
                 // fullscreen 场景点击翻页：左侧30%上一页，右侧70%下一页
                 book.onclick = function(e) {
                     const rect = book.getBoundingClientRect();
@@ -976,6 +979,7 @@
                         if (currentIndex > 0) {
                             currentIndex--;
                             book.onclick = null;
+                            rightPage.style.pointerEvents = '';
                             updateScene();
                         }
                     } else {
@@ -983,6 +987,7 @@
                         if (currentIndex < script.length - 1) {
                             currentIndex++;
                             book.onclick = null;
+                            rightPage.style.pointerEvents = '';
                             updateScene();
                         }
                     }
@@ -1042,6 +1047,8 @@
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除点击事件
                 book.onclick = null;
+                // 恢复 right-page 点击
+                rightPage.style.pointerEvents = '';
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
