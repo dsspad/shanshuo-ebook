@@ -995,8 +995,15 @@
             }
         });
 
-        // 初始化
-        updateScene();
+        // 初始化 - 延迟执行确保DOM完全加载
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                updateScene();
+            } catch (e) {
+                console.error('初始化错误:', e);
+                document.body.innerHTML = '<div style="padding:20px;color:red;">加载出错: ' + e.message + '</div>';
+            }
+        });
     </script>
 </body>
 </html>
