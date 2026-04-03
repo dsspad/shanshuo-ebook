@@ -18,25 +18,13 @@
             align-items: center;
         }
 
-        /* 竖屏提示 */
+        /* 竖屏时保持3:2比例缩小显示 */
         @media screen and (orientation: portrait) {
-            body::before {
-                content: '请横屏阅读';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: #1a1a1a;
-                color: #fff;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 24px;
-                z-index: 9999;
-            }
             #book {
-                display: none !important;
+                width: 90vw;
+                height: auto;
+                aspect-ratio: 3 / 2;
+                max-height: 60vh;
             }
         }
         
@@ -988,15 +976,6 @@
                 leftPage.click();
             }
         });
-
-        // 强制横屏
-        function forceLandscape() {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-            }
-        }
-        forceLandscape();
-        window.addEventListener('orientationchange', forceLandscape);
 
         // 初始化
         updateScene();
