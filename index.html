@@ -969,15 +969,17 @@
                     const rect = book.getBoundingClientRect();
                     const relativeX = e.clientX - rect.left;
                     const width = rect.width;
-                    if (relativeX < width * 0.3) {
-                        // 左侧30%：上一页
+                    const ratio = relativeX / width;
+                    console.log('Click at:', relativeX, 'width:', width, 'ratio:', ratio);
+                    if (ratio < 0.3) {
+                        console.log('Left 30%, go prev');
                         if (currentIndex > 0) {
                             currentIndex--;
                             book.onclick = null;
                             updateScene();
                         }
                     } else {
-                        // 右侧70%：下一页
+                        console.log('Right 70%, go next');
                         if (currentIndex < script.length - 1) {
                             currentIndex++;
                             book.onclick = null;
