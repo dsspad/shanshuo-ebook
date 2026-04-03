@@ -18,13 +18,28 @@
             align-items: center;
         }
 
-        /* 竖屏时保持3:2比例缩小显示 */
+        /* 竖屏时保持3:2比例缩小显示，并显示建议提示 */
         @media screen and (orientation: portrait) {
+            body::before {
+                content: '建议横屏阅读以获得最佳体验';
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.7);
+                color: #fff;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                z-index: 9999;
+                pointer-events: none;
+            }
             #book {
                 width: 90vw;
                 height: auto;
                 aspect-ratio: 3 / 2;
                 max-height: 60vh;
+                margin-top: 50px;
             }
         }
         
