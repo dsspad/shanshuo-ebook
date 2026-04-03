@@ -26,23 +26,24 @@
             body::before {
                 content: '建议横屏阅读以获得最佳体验';
                 position: fixed;
-                top: 10px;
+                bottom: 60px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: rgba(0,0,0,0.7);
+                background: rgba(0,0,0,0.6);
                 color: #fff;
-                padding: 8px 16px;
+                padding: 6px 12px;
                 border-radius: 4px;
-                font-size: 14px;
+                font-size: 12px;
                 z-index: 9999;
                 pointer-events: none;
+                white-space: nowrap;
             }
             #book {
                 width: 95vw;
                 height: auto;
                 aspect-ratio: 3 / 2;
-                max-height: 70vh;
-                margin-top: 50px;
+                max-height: 75vh;
+                margin-top: 20px;
             }
         }
         
@@ -534,8 +535,25 @@
             position: absolute;
             bottom: 30px;
             right: 60px;
-            font-size: 12px;
+            font-size: 10px;
             color: #999;
+        }
+        
+        /* 手机端页码更小 */
+        @media screen and (max-width: 768px) {
+            #page-num {
+                font-size: 8px;
+                bottom: 15px;
+                right: 30px;
+            }
+        }
+        
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            #page-num {
+                font-size: 7px;
+                bottom: 10px;
+                right: 20px;
+            }
         }
         
         /* 无图文字场景 - 整页居中 */
@@ -635,8 +653,25 @@
             position: absolute;
             bottom: 30px;
             left: 60px;
-            font-size: 12px;
+            font-size: 10px;
             color: #ccc;
+        }
+
+        /* 手机端提示更小 */
+        @media screen and (max-width: 768px) {
+            #hint {
+                font-size: 8px;
+                bottom: 15px;
+                left: 30px;
+            }
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            #hint {
+                font-size: 7px;
+                bottom: 10px;
+                left: 20px;
+            }
         }
         
         /* 全屏画面+文字悬浮 - 铺满3:2框 */
@@ -665,6 +700,23 @@
         .fullscreen #text {
             max-width: 80%;
             text-align: center;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        /* 手机端 fullscreen 字体 */
+        @media screen and (max-width: 768px) {
+            .fullscreen #text {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            .fullscreen #text {
+                font-size: 10px;
+                line-height: 1.5;
+            }
         }
         .fullscreen #page-num {
             position: absolute;
