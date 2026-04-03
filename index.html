@@ -885,18 +885,7 @@
                 // 更新右栏文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
-            } else {
-                // 隐藏上一页点击区域
-                const prevBtn = document.getElementById('text-only-prev');
-                if (prevBtn) prevBtn.style.display = 'none';
-                // 隐藏返回封面按钮
-                const backBtn = document.getElementById('back-to-cover');
-                if (backBtn) backBtn.style.display = 'none';
-                // 清除封面点击事件
-                book.onclick = null;
-            }
-            // 处理文字在右场景
-            else if (scene.type === 'text-right') {
+            } else if (scene.type === 'text-right') {
                 book.classList.add('text-right');
                 cssScene.style.display = 'none';
                 sceneImage.classList.remove('active');
@@ -969,6 +958,9 @@
                     console.log('Loading cover image:', sceneImages[scene.scene]);
                     sceneImage.src = sceneImages[scene.scene];
                     sceneImage.classList.add('active');
+                    // 封面无文字
+                    speakerEl.textContent = '';
+                    textEl.textContent = '';
                     sceneImage.onload = function() {
                         console.log('Cover image loaded successfully');
                     };
@@ -979,11 +971,8 @@
                 } else {
                     console.error('No cover image found');
                     textEl.textContent = '封面未找到，点击继续';
+                    speakerEl.textContent = '';
                 }
-
-                // 封面无文字
-                speakerEl.textContent = '';
-                textEl.textContent = '';
 
                 // 封面点击下一页 - 直接绑定
                 book.onclick = function(e) {
@@ -994,13 +983,21 @@
                         updateScene();
                     }
                 };
-            }
-            else {
+            } else {
                 // 更新左栏场景 - 优先使用图片
                 cssScene.style.display = 'none';
                 
                 // 清除之前的图片方向类
                 sceneImage.classList.remove('vertical');
+                
+                // 隐藏上一页点击区域
+                const prevBtn = document.getElementById('text-only-prev');
+                if (prevBtn) prevBtn.style.display = 'none';
+                // 隐藏返回封面按钮
+                const backBtn = document.getElementById('back-to-cover');
+                if (backBtn) backBtn.style.display = 'none';
+                // 清除封面点击事件
+                book.onclick = null;
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
