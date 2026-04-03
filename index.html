@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山说 · 第一章</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", serif;
+            background: #f5f5f5;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #book {
+            width: 90vw;
+            max-width: 1200px;
+            aspect-ratio: 3 / 2;
+            max-height: 90vh;
+            display: flex;
+            background: #fff;
+            box-shadow: 0 10px 60px rgba(0,0,0,0.15);
+        }
+        
+        /* 左栏 - 图片区 */
+        #left-page {
+            width: 50%;
+            height: 100%;
+            position: relative;
+            cursor: w-resize;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+        }
+        
+        #scene-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        #scene-image.active {
+            display: block;
+        }
+        
+        /* 场景图片容器 - 3:4比例 */
+        .scene-container {
+            width: 75%; /* 3:4 相对于高度 */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* 场景图片 */
+        #scene-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: none;
+        }
+        
+        #scene-image.active {
+            display: block;
+        }
+        
+        /* 竖版图片样式 - 用于scene27等竖构图场景 */
+        #scene-image.vertical {
+            max-width: 75%;
+            max-height: 100%;
+        }
+        
+        /* CSS 模拟场景 */
+        .css-scene {
+            width: 75%; /* 3:4 比例 */
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        
+        /* 爬坡场景 */
+        .scene-climb {
+            background: linear-gradient(180deg, #87CEEB 0%, #E8F4F8 50%, #8B7355 100%);
+        }
+        .scene-climb::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(45deg, #6B5B4F 0%, #8B7355 100%);
+            clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);
+        }
+        .scene-climb::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 30%;
+            height: 20%;
+            background: rgba(255, 182, 193, 0.6);
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+        
+        /* 数据界面 */
+        .scene-data {
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #00ff88;
+            font-family: monospace;
+        }
+        .data-number {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .data-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+        
+        /* 路面 */
+        .scene-road {
+            background: linear-gradient(180deg, #B8B8B8 0%, #A0A0A0 100%);
+        }
+        .scene-road::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            width: 60%;
+            height: 3px;
+            background: #666;
+            transform: rotate(-5deg);
+        }
+        .scene-road::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            width: 40px;
+            height: 20px;
+            background: #4a6741;
+            border-radius: 50%;
+        }
+        
+        /* 羊蹄甲 */
+        .scene-flower {
+            background: linear-gradient(180deg, #FFE4E1 0%, #FFF0F5 50%, #8B7355 100%);
+        }
+        .scene-flower::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 20%;
+            width: 60%;
+            height: 40%;
+            background: radial-gradient(circle, rgba(255,182,193,0.8) 0%, transparent 70%);
+        }
+        .scene-flower::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(45deg, #6B5B4F 0%, #8B7355 100%);
+            clip-path: polygon(0 30%, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        /* 黄花风铃木 */
+        .scene-yellow-flower {
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 30%, #87CEEB 100%);
+        }
+        .scene-yellow-flower::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 10%;
+            width: 80%;
+            height: 50%;
+            background: radial-gradient(ellipse at center, rgba(255,215,0,0.9) 0%, rgba(255,165,0,0.5) 50%, transparent 70%);
+        }
+        
+        /* 码表 - 有图文字场景 */
+        .scene-computer {
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .computer-display {
+            width: 200px;
+            height: 200px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #00ff88;
+            font-family: monospace;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .computer-value {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        .computer-unit {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* 电线塔 */
+        .scene-tower {
+            background: linear-gradient(180deg, #D3D3D3 0%, #A9A9A9 100%);
+        }
+        .scene-tower::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80%;
+            background: linear-gradient(90deg, #4a4a4a 0%, #6a6a6a 50%, #4a4a4a 100%);
+            clip-path: polygon(40% 0, 60% 0, 70% 100%, 30% 100%);
+        }
+        .scene-tower::after {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: #4a4a4a;
+        }
+        
+        /* 白鸟 */
+        .scene-bird {
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+        }
+        .scene-bird::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 60%;
+            width: 60px;
+            height: 30px;
+            background: #fff;
+            border-radius: 50% 50% 0 0;
+            transform: rotate(-20deg);
+        }
+        .scene-bird::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            left: 20%;
+            width: 40%;
+            height: 40%;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+        
+        /* 湖边 */
+        .scene-lake {
+            background: linear-gradient(180deg, #C0C0C0 0%, #A8B8C8 50%, #708090 100%);
+        }
+        .scene-lake::before {
+            content: '';
+            position: absolute;
+            top: 40%;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(180deg, rgba(192,192,192,0.8) 0%, rgba(112,128,144,0.9) 100%);
+        }
+        
+        /* 水面倒影 */
+        .scene-reflection {
+            background: linear-gradient(180deg, #B0C4DE 0%, #778899 100%);
+        }
+        .scene-reflection::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 150px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            filter: blur(5px);
+        }
+        
+        /* 碎裂倒影 */
+        .scene-broken {
+            background: linear-gradient(180deg, #A8B8C8 0%, #6B7B8C 100%);
+        }
+        .scene-broken::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            width: 60%;
+            height: 50%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+        }
+        
+        /* 落叶 */
+        .scene-leaf {
+            background: linear-gradient(180deg, #C0C0C0 0%, #A8B8C8 100%);
+        }
+        .scene-leaf::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            width: 30px;
+            height: 20px;
+            background: #8B4513;
+            border-radius: 0 100% 0 100%;
+            transform: rotate(45deg);
+        }
+        
+        /* 落日车流 */
+        .scene-sunset {
+            background: linear-gradient(180deg, #FF6B6B 0%, #FFA07A 30%, #4A4A4A 100%);
+        }
+        .scene-sunset::before {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+        }
+        
+        /* 缝隙场景 */
+        .scene-gap {
+            background: #f0f0f0;
+            position: relative;
+        }
+        .scene-gap::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 200px;
+            background: linear-gradient(180deg, transparent 0%, #333 20%, #333 80%, transparent 100%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        /* 银湖山远景 */
+        .scene-mountain {
+            background: linear-gradient(180deg, #D3D3D3 0%, #A9A9A9 50%, #6B8E6B 100%);
+        }
+        .scene-mountain::before {
+            content: '';
+            position: absolute;
+            bottom: 30%;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(180deg, #8FBC8F 0%, #6B8E6B 100%);
+            clip-path: polygon(0 60%, 30% 20%, 60% 50%, 100% 30%, 100% 100%, 0 100%);
+        }
+        
+        /* 右栏 - 文字区 */
+        #right-page {
+            width: 50%;
+            height: 100%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: e-resize;
+            position: relative;
+        }
+        
+        #speaker {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        #text {
+            font-size: 18px;
+            line-height: 2;
+            color: #333;
+            max-width: 400px;
+        }
+        
+        #text .para {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            margin-bottom: 1em;
+        }
+        
+        #text .para.visible {
+            opacity: 1;
+        }
+        
+        /* 页码 */
+        #page-num {
+            position: absolute;
+            bottom: 30px;
+            right: 60px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 无图文字场景 - 整页居中 */
+        .text-only #left-page {
+            display: none;
+        }
+        .text-only #right-page {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+        .text-only #text {
+            text-align: center;
+            max-width: 600px;
+            padding: 0 40px;
+        }
+        .text-only .css-scene {
+            display: none;
+        }
+
+        /* 文字在右场景 */
+        .text-right #left-page {
+            width: 50%;
+            background: #fff;
+        }
+        .text-right #right-page {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+        .text-right #text {
+            text-align: center;
+            line-height: 1.8;
+        }
+        
+        /* 跨页布局 - 文字在左，图片在右 */
+        .cross-page-text-left #left-page {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: w-resize;
+            background: #fff;
+        }
+        .cross-page-text-left #right-page {
+            width: 50%;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            cursor: e-resize;
+        }
+        .cross-page-text-left .scene-container {
+            width: 75%;
+            height: 100%;
+        }
+        
+        /* 跨页布局 - 图片在左，文字在右 */
+        .cross-page-image-left #left-page {
+            width: 50%;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            cursor: w-resize;
+        }
+        .cross-page-image-left #right-page {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: e-resize;
+            background: #fff;
+        }
+        .cross-page-image-left .scene-container {
+            width: 75%;
+            height: 100%;
+        }
+        
+        /* 提示 */
+        #hint {
+            position: absolute;
+            bottom: 30px;
+            left: 60px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        /* 全屏画面+文字悬浮 - 跨页铺满 */
+        .fullscreen #book {
+            position: relative;
+        }
+        .fullscreen #left-page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .fullscreen #right-page {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            background: transparent;
+            justify-content: flex-end;
+            padding-bottom: 100px;
+        }
+        .fullscreen .scene-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1a1a1a;
+        }
+        .fullscreen #scene-image {
+            object-fit: contain;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+        .fullscreen #text {
+            background: transparent;
+            padding: 30px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        .fullscreen #speaker {
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="book">
+        <div id="left-page">
+            <div class="scene-container">
+                <img id="scene-image" src="" alt="场景">
+                <div id="css-scene" class="css-scene"></div>
+            </div>
+        </div>
+        <div id="right-page">
+            <div id="speaker"></div>
+            <div id="text"></div>
+            <div id="hint">点击右侧下一页，左侧上一页</div>
+            <div id="page-num">1 / 50</div>
+        </div>
+    </div>
+
+    <script>
+        // 剧本数据
+        const script = [
+            { type: "scene", scene: "cover", speaker: "", text: "" },
+            { type: "text-only", speaker: "", text: "第一章" },
+            { type: "scene", scene: "scene01", speaker: "", text: "" },
+            { type: "scene", scene: "scene00", speaker: "", text: "" },
+            { type: "scene", scene: "climb", speaker: "", text: "大腿开始发烫的时候，若子知道半山腰到了。不是酸痛，是那种从肌肉深处渗出来的温热，像有人在她腿里点了一小簇火。她保持着踏频，呼吸平稳，汗水从额角滑到下巴，悬停了半秒，然后被风带走。第三档，齿比刚好，这段坡度不用站起来摇车也能对付。" },
+            { type: "scene", scene: "data", speaker: "", text: "两百次骑行，她一直有记录。只是早已不再把码表放在车头显眼的位置。数据不会骗人，但数据也说明不了什么。" },
+            { type: "scene", scene: "dream", speaker: "", text: "若子熟悉每一个补丁、每一处沉降、每一个需要稍微调整重心的小坑。熟悉到有时候她觉得自己不是在骑车，是在重复一段被身体记住的梦。" },
+            { type: "scene", scene: "road", speaker: "", text: "水泥路面在车轮下发出细微的嗡鸣。这条路修了至少二十年，表面已经磨出一种介于灰白和浅黄之间的颜色，裂缝里长出稀疏的杂草。" },
+            { type: "scene", scene: "flower", speaker: "", text: "左边开始闪过羊蹄甲的树影。这个季节它们开得正好，粉白色的花朵一簇一簇挂在枝头，风一吹就往下掉。若子不喜欢花，或者说，她不喜欢花被赋予的那些意义。但羊蹄甲是例外——它们落下来的时候没有任何声响，不像树叶会沙沙响，也不像果实会砸出动静。只是安静地掉下来，躺在路面上，被车轮碾过去，变成淡紫色的痕迹。她从不避让。" },
+            { type: "scene", scene: "yellow-flower", speaker: "", text: "坡道转了一个弯，阳光突然变得刺眼。若子眯起眼睛，视线穿过羊蹄甲的枝桠，看见前方路边站着几棵黄花风铃木。它们比羊蹄甲更高调，满树金黄，和羊蹄甲的粉白形成一道渐变的色带。这种树的花期很短，大概只有两周。若子记得去年这个时候它们已经谢了，今年却开得正盛。时间就是这样，有时候你以为自己在跟着它走，其实只是在原地打转。" },
+            { type: "scene", scene: "tower", speaker: "", text: "再往上，地势渐高，树木变得稀疏，那座老旧的电线塔就从路尽头浮现出来。它站在山路的制高点，沉默地俯瞰着城市。塔身锈迹斑斑，支架上缠着枯死的藤蔓，绝缘子上积着一层灰白色的尘。若子每次经过都会抬头看一眼。不是为了什么，只是习惯。她从没在这座塔上见过鸟，只有那些锈迹和藤蔓证明它确实在这里站了很久，见证过很多事情。" },
+            { type: "scene", scene: "scene8", speaker: "", text: "一只白色的鸟从塔顶飞过，翅膀拍打空气的声音被她的喘息盖过。她继续踩踏板，没有减速。" },
+            { type: "scene", scene: "scene9", speaker: "", text: "最后一段坡是最陡的。若子切换到最后一档，身体微微前倾，手肘弯曲，把重心压低。汗水从额角滑下来，滴进眼睛里，她眨了眨眼，刺痛感让视线模糊了一瞬。她用手背抹了一把，继续从睫毛的缝隙间看路。这种时候她的大脑会空出来，什么都不想，只剩下节奏——吸气，踩两下；呼气，踩两下。像某种原始的咒语，把意识维持在刚好够用的程度。" },
+            { type: "scene", scene: "scene10", speaker: "", text: "然后，坡结束了。她习惯性地拿出码表看了眼时间，比平均快一点，比最好成绩慢很多。若子不在乎，今天的她不是为成绩来的。" },
+            { type: "scene", scene: "scene11", speaker: "", text: "银湖就在前面五十米。她放慢速度，让车轮在最后的平路上滑行。风突然变得湿润，带着一种说不清楚的气味——不是鱼腥，不是草木，是湖水本身的味道，凉凉的，像是把脸埋进一块旧毛巾里会闻到的气息。" },
+            { type: "scene", scene: "scene12", speaker: "", text: "若子在老地方停下：湖边一块凸出的岩石旁边。这里没有护栏，只有几棵歪脖子松树提供一点阴凉。她右脚从锁踏上扭开，咔哒一声轻响，鞋底的扣片脱离踏板。左脚也解开，她单脚撑地，把车倾斜过来，然后跨下车架。" },
+            { type: "scene", scene: "scene13", speaker: "", text: "白色的锁鞋踩在碎石路面上，发出细碎的摩擦声。她低头看着锁鞋。鞋面上有一道旧划痕，从鞋头斜斜延伸到侧面。她盯着那道痕迹看了很久，不记得是什么时候留下的。第150次？第180次？或者更早？划痕的边缘已经磨得发白，像是一道愈合多年的伤疤，但她想不起它的来历。" },
+            { type: "scene", scene: "scene14", speaker: "", text: "摘下头盔，若子的头发湿漉漉地贴在头皮上。风一吹，打了个寒颤。" },
+            { type: "scene", scene: "scene15", speaker: "", text: "银湖比她想象中更安静。她听得见自己的心跳，听得见远处偶尔传来的鸟鸣，听得见湖水轻轻拍打岸边的声音——不是波浪，只是最轻微的水面颤动，像有人在远处叹气。她走向湖边。" },
+            { type: "scene", scene: "scene16", speaker: "", text: "水面是银色的。比镜子更浑浊、更柔软的银，像一块被用了很多年的绸缎。天空的云层很厚，阳光从缝隙里漏下来，在湖面上投下几块移动的光斑。" },
+            { type: "scene", scene: "scene17", speaker: "", text: "若子俯身站在岸边，看着自己的倒影。倒影也在看着她。她举起右手，倒影举起左手。她歪头，倒影也歪头。姿势一模一样，但她觉得有什么地方不对劲。" },
+            { type: "scene", scene: "scene18", speaker: "", text: "她凑近了一点，蹲下来，让自己的脸离水面更近。倒影的表情和她不一样。她在皱眉——她知道自己正在皱眉，因为阳光太刺眼，因为汗水流进眼睛有点刺痛。但倒影没有。倒影的脸是平的，没有任何表情，眼睛睁得很大，像是在看一件很远的东西。" },
+            { type: "scene", scene: "scene19", speaker: "", text: "若子眨了眨眼。倒影也眨了眨眼，但慢了一拍。不是光线折射造成的延迟，是明显的、故意的一拍。就像倒影在模仿她，但是没跟上节奏。她站起来，后退了一步。" },
+            { type: "scene", scene: "scene20", speaker: "", text: "水面晃动了几下，倒影碎成一片一片的银色，然后慢慢重新聚拢。这一次，倒影的姿势和她不一样了——她还站着，倒影却保持着刚才蹲着的姿势，仰着头，看着她。若子没有叫出声，只是又后退了一步，感觉到脚下的碎石在滑动。" },
+            { type: "text-only", speaker: "", text: "「我知道你在」" },
+            { type: "scene", scene: "scene22", speaker: "", text: "声音从水面传来，或者从空气里传来，或者从她脑子里传来。若子无法确定。那声音没有性别，没有方向，像是从很远的地方传来，又像是在她耳边低语。她听不出任何情绪，只是陈述，只是确认。" },
+            { type: "scene", scene: "scene23", speaker: "若子", text: "「什么？」若子说。她的声音很干，比她想象的更干。没有回答。水面恢复了平静，倒影也恢复了正常——现在它完美地复制着她的姿态，她的表情，她微微张开的嘴。刚才那个蹲着的姿势不见了，那个没有表情的脸也不见了。" },
+            { type: "text-only", speaker: "", text: "一切都像是她的幻觉，但声音留下了。" },
+            { type: "scene", scene: "scene26", speaker: "", text: "这句话在她脑子里回荡，不是回声，是某种更顽固的东西。它不想被理解，只存在着，像一块石头沉在水底。" },
+            { type: "scene", scene: "scene27", speaker: "", text: "若子盯着湖面，试图找出声音的来源，但那里只有银色，只有变形的倒影，只有偶尔飘过的一片落叶。" },
+            { type: "text-right", speaker: "", text: "她应该问什么？你是谁？你知道什么？你在说什么？所有的问题都太急切了，太渴望得到一个答案。而她突然意识到，这个声音——如果它真的存在过——并不打算解释任何事情。它只是说了一句话，然后停止了。" },
+            { type: "scene", scene: "scene28", speaker: "", text: "就像羊蹄甲落下，就像那只鸟飞过，就像电线塔站在那里什么都不做。" },
+            { type: "scene", scene: "scene29", speaker: "", text: "若子又站了一会儿。风变大了，湖面开始泛起细密的波纹。她的倒影碎成无数个小块，再也无法辨认出表情。她感觉到大腿肌肉的余温正在散去，汗湿的衣服贴在背上，凉飕飕的。" },
+            { type: "scene", scene: "scene30", speaker: "", text: "她应该靠近一点吗？湖边有一块石头，她平时会坐在那儿喝水、发呆、看云。再走五步，她就能碰到湖水。再走十步，她就能走进水里。她知道水深，知道湖底的淤泥，知道夏天有时候会有人来这里游泳，然后被管理员赶走。但今天不一样。" },
+            { type: "scene", scene: "scene31", speaker: "", text: "她想起一部电影。只是一些模糊的画面，一个男人，一个坑，某种关于延迟的感觉——延迟某个最终的决定，延迟某个无法回头的动作。她记不清电影的名字，记不清具体的情节，但那种感受留在身体里：在必须做出选择前的那个间隙，时间会变得粘稠，像蜂蜜一样缓慢流动，而你就悬在那里，既不向前也不后退。—— 悬置，延迟。" },
+            { type: "scene", scene: "scene32", speaker: "", text: "她盯着水面，试图找回刚才那个倒影。也许再看一次，就能理解那个声音。她重新蹲下来，倒影也蹲下来，和她同步，分毫不差。她皱眉，倒影也皱眉。她眨眼，倒影也眨眼，同样的速度，同样的节奏。完美得像是刻意为之。" },
+            { type: "text-only", speaker: "", text: "刚才那个延迟呢？那个表情不同的脸呢？她等了几秒钟。倒影也等了几秒钟，保持着完全相同的姿势。" },
+            { type: "scene", scene: "scene34", speaker: "", text: "她又等了一会儿，眼睛开始发酸。什么都没有发生。水面下的那张脸就是她自己，疲惫、困惑、带着骑行后的红晕。" },
+            { type: "scene", scene: "scene35", speaker: "", text: "她后退一步，又一步。湖面依然平静，银白色的绸缎上只有风留下的细纹。声音没有再次出现，倒影也没有再做出任何多余的动作。一切都恢复了它应该有的样子，仿佛刚才的错位只是光线、角度、疲劳共同制造的幻觉。" },
+            { type: "text-only", speaker: "", text: "但「我知道你在」这句话还在她脑子里。" },
+            { type: "scene", scene: "scene36", speaker: "", text: "若子转身走回自行车。她没有跑，没有匆忙，只是以正常的步伐离开湖边。戴上头盔，拉紧束带，检查刹车。她的手指很稳，呼吸也很稳。然后踩下踏板，让车轮重新转动起来。" },
+            { type: "scene", scene: "scene37", speaker: "", text: "下坡的时候风很大，吹得眼睛发酸。她没有减速，重力带着她往下冲去。羊蹄甲、黄花风铃木、电线塔，所有的东西都在向后退去，变成模糊的颜色和形状。" },
+            { type: "scene", scene: "scene39", speaker: "", text: "她没有回头。" },
+            { type: "scene", scene: "scene40", speaker: "", text: "山脚下的便利店，她停下来买了一瓶水。坐在门口的塑料凳上喝完的时候，她注意到对面马路有一个路标，指向另一条山路——青屏山。" },
+            { type: "scene", scene: "scene41", speaker: "", text: "她从没骑过那条路，听说坡度更陡，风景更野。念头只是一闪而过，像水面上的涟漪。" },
+            { type: "scene", scene: "scene42", speaker: "", text: "太阳已经开始西斜，把天空染成一种介于橙红和灰紫之间的颜色。她看着马路上的车流，看着行人匆匆走过。" },
+            { type: "text-only", speaker: "", text: "一切如常。" },
+            { type: "scene", scene: "scene44", speaker: "", text: "不在如常的是她自己——某种东西在胸腔里松动了，像是一扇门打开了一条缝，但她还没有准备好往里面看。" },
+            { type: "text-only", speaker: "", text: "那声音说「我知道你在」不是威胁，不是邀请，只是陈述。" },
+            { type: "scene", scene: "scene46", speaker: "", text: "若子把空瓶子扔进回收箱，跨上车，左脚找到锁踏的位置，咔哒一声扣上。右脚也扣好，她蹬了一下地面，车身向前滑动。她往城市的方向去。明天她还会来。或者后天。" },
+            { type: "scene", scene: "scene47", speaker: "", text: "或者等到黄花风铃木谢了、羊蹄甲落尽、电线塔上的藤蔓彻底枯死的时候。" },
+            { type: "text-only", speaker: "", text: "她还会来。" },
+            { type: "text-only", speaker: "", text: "第一章\n完" },
+            { type: "text-only", speaker: "", text: "本故事纯属虚构，所有虚构纯属巧合\n编辑/策划 无梦的深睡 SPAD织工团" }
+        ];
+
+        let currentIndex = 0;
+        let isTyping = false;
+
+        const leftPage = document.getElementById('left-page');
+        const rightPage = document.getElementById('right-page');
+        const sceneImage = document.getElementById('scene-image');
+        const cssScene = document.getElementById('css-scene');
+        const speakerEl = document.getElementById('speaker');
+        const textEl = document.getElementById('text');
+        const pageNumEl = document.getElementById('page-num');
+        const book = document.getElementById('book');
+
+        // 场景图片映射
+        const sceneImages = {
+            'cover': 'images/cover.png',
+            'scene00': 'image_spad1/01.jpg',
+            'scene01': 'image_spad1/00.jpg',
+            'climb': 'images/scene_01_climb.jpg',
+            'data': 'images/scene_02_data.jpg',
+            'road': 'images/scene_03_road.jpg',
+            'dream': 'images/scene_04.jpg',
+            'flower': 'images/scene_05_yellow_flower.jpg',
+            'yellow-flower': 'images/scene_06.jpg',
+            'tower': 'images/scene_07_tower.jpg',
+            'scene28': 'image_spad1/27.jpg',
+            'scene29': 'image_spad1/28.jpg',
+            'scene30': 'image_spad1/29.jpg',
+            'scene31': 'image_spad1/30.jpg',
+            'scene32': 'image_spad1/31.jpg',
+            'scene34': 'image_spad1/32.jpg',
+            'scene35': 'image_spad1/33.jpg',
+            'scene36': 'image_spad1/35.jpg',
+            'scene37': 'image_spad1/36.jpg',
+            'scene39': 'image_spad1/39.jpg',
+            'scene40': 'image_spad1/40.jpg',
+            'scene41': 'image_spad1/41.jpg',
+            'scene42': 'image_spad1/42.jpg',
+            'scene44': 'image_spad1/44.jpg',
+            'scene46': 'image_spad1/46.jpg',
+            'scene47': 'image_spad1/47.jpg',
+            'scene8': 'image_reload/8.jpg',
+            'scene9': 'image_reload/9.jpg',
+            'scene10': 'image_reload/10.jpg',
+            'scene11': 'image_reload/11.jpg',
+            'scene12': 'image_reload/12.jpg',
+            'scene13': 'image_reload/13.jpg',
+            'scene14': 'image_reload/14.jpg',
+            'scene15': 'image_reload/15.jpg',
+            'scene16': 'image_reload/16.jpg',
+            'scene17': 'image_reload/17.jpg',
+            
+            'scene17': 'image_spad1/17.jpg',
+            'scene18': 'image_spad1/18.jpg',
+            'scene19': 'image_spad1/19.jpg',
+            'scene20': 'image_spad1/20.jpg',
+            'scene22': 'image_spad1/22.jpg',
+            'scene23': 'image_spad1/23.jpg',
+            'scene26': 'image_spad1/24.jpg',
+            'scene27': 'image_spad1/25.1.jpg'
+        };
+
+        function updateScene() {
+            const scene = script[currentIndex];
+            
+            // 更新页码
+            pageNumEl.textContent = `${currentIndex + 1} / ${script.length}`;
+            
+            // 清除所有特殊布局类
+            book.classList.remove('text-only', 'cross-page-text-left', 'cross-page-image-left', 'fullscreen');
+            
+            // 重置 fullscreen 时的图片样式
+            sceneImage.style.objectFit = '';
+            sceneImage.style.width = '';
+            sceneImage.style.height = '';
+            
+            // 处理无图文字场景
+            if (scene.type === 'text-only') {
+                book.classList.add('text-only');
+                cssScene.style.display = 'none';
+                sceneImage.classList.remove('active');
+
+                // 更新右栏文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+            }
+            // 处理文字在右场景
+            else if (scene.type === 'text-right') {
+                book.classList.add('text-right');
+                cssScene.style.display = 'none';
+                sceneImage.classList.remove('active');
+
+                // 更新右栏文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+            }
+            // 处理文字在左、图片在右的跨页布局
+            else if (scene.type === 'text-left') {
+                book.classList.add('cross-page-text-left');
+                
+                // 左页显示文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+                
+                // 右页显示图片 - 使用场景索引作为key查找图片
+                const sceneKey = 'scene' + (currentIndex + 1);
+                if (sceneImages[sceneKey]) {
+                    sceneImage.src = sceneImages[sceneKey];
+                    sceneImage.classList.add('active');
+                }
+                cssScene.style.display = 'none';
+            }
+            // 处理图片在左、文字在右的跨页布局
+            else if (scene.type === 'image-left') {
+                book.classList.add('cross-page-image-left');
+                
+                // 左页显示图片 - 使用场景索引作为key查找图片
+                const sceneKey = 'scene' + (currentIndex + 1);
+                if (sceneImages[sceneKey]) {
+                    sceneImage.src = sceneImages[sceneKey];
+                    sceneImage.classList.add('active');
+                }
+                cssScene.style.display = 'none';
+                
+                // 右页显示文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+            }
+            // 处理全屏画面+文字悬浮
+            else if (scene.type === 'fullscreen') {
+                book.classList.add('fullscreen');
+                cssScene.style.display = 'none';
+                
+                // 显示全屏图片
+                if (scene.scene && sceneImages[scene.scene]) {
+                    sceneImage.src = sceneImages[scene.scene];
+                    sceneImage.classList.add('active');
+                    sceneImage.style.objectFit = 'cover';
+                    sceneImage.style.width = '100%';
+                    sceneImage.style.height = '100%';
+                }
+                
+                // 显示悬浮文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+            }
+            else {
+                // 更新左栏场景 - 优先使用图片
+                cssScene.style.display = 'none';
+                
+                // 清除之前的图片方向类
+                sceneImage.classList.remove('vertical');
+                
+                if (scene.scene && sceneImages[scene.scene]) {
+                    // 使用真实图片
+                    sceneImage.src = sceneImages[scene.scene];
+                    sceneImage.classList.add('active');
+                    // scene27 使用竖版显示
+                    if (scene.scene === 'scene27') {
+                        sceneImage.classList.add('vertical');
+                    }
+                    // 检测图片尺寸，16:9横图使用全屏效果（保持比例铺平）
+                    sceneImage.onload = function() {
+                        const imgRatio = sceneImage.naturalWidth / sceneImage.naturalHeight;
+                        // 16:9 比例约为 1.78，允许一定误差 (1.6 ~ 2.0)
+                        if (imgRatio > 1.6 && imgRatio < 2.0) {
+                            book.classList.add('fullscreen');
+                            // 保持16:9比例，使用contain模式铺平页面
+                            sceneImage.style.objectFit = 'contain';
+                            sceneImage.style.width = 'auto';
+                            sceneImage.style.height = 'auto';
+                            sceneImage.style.maxWidth = '100%';
+                            sceneImage.style.maxHeight = '100%';
+                        }
+                    };
+                } else if (scene.type === 'computer') {
+                    // 码表场景使用 CSS
+                    sceneImage.classList.remove('active');
+                    cssScene.style.display = 'block';
+                    cssScene.className = 'css-scene scene-computer';
+                    cssScene.innerHTML = `
+                        <div class="computer-display">
+                            <div class="computer-value">${scene.value}</div>
+                            <div class="computer-unit">${scene.unit}</div>
+                        </div>
+                    `;
+                } else {
+                    // 其他场景使用 CSS
+                    sceneImage.classList.remove('active');
+                    cssScene.style.display = 'block';
+                    cssScene.className = `css-scene scene-${scene.scene}`;
+                    cssScene.innerHTML = '';
+                }
+                
+                // 更新右栏文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
+            }
+        }
+
+        function typeText(text) {
+            isTyping = false;
+            textEl.innerHTML = '';
+            
+            // 将文本按句号分割成段落
+            const paragraphs = text.split(/([。！？]+)/).filter(p => p.trim());
+            
+            // 重新组合成完整的句子
+            const sentences = [];
+            for (let i = 0; i < paragraphs.length; i += 2) {
+                const sentence = paragraphs[i] + (paragraphs[i + 1] || '');
+                if (sentence.trim()) sentences.push(sentence.trim());
+            }
+            
+            // 创建段落元素，直接显示
+            sentences.forEach((sentence) => {
+                const para = document.createElement('span');
+                para.className = 'para visible';
+                para.textContent = sentence;
+                textEl.appendChild(para);
+            });
+        }
+
+        // 下一页
+        rightPage.addEventListener('click', () => {
+            if (isTyping) {
+                // 如果正在渐显，直接显示完整文字
+                const paras = textEl.querySelectorAll('.para');
+                paras.forEach(p => p.classList.add('visible'));
+                isTyping = false;
+            } else if (currentIndex < script.length - 1) {
+                currentIndex++;
+                updateScene();
+            }
+        });
+
+        // 上一页
+        leftPage.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateScene();
+            }
+        });
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                rightPage.click();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                leftPage.click();
+            }
+        });
+
+        // 初始化
+        updateScene();
+    </script>
+</body>
+</html>
