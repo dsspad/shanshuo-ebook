@@ -943,6 +943,18 @@
                 // 显示悬浮文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
+
+                // 全屏场景点击左侧返回上一页
+                book.onclick = function(e) {
+                    const rect = book.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    // 点击左侧30%区域返回上一页
+                    if (x < rect.width * 0.3 && currentIndex > 0) {
+                        currentIndex--;
+                        book.onclick = null;
+                        updateScene();
+                    }
+                };
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
