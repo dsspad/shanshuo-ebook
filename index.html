@@ -962,6 +962,9 @@
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
+                // 禁用 right-page 点击，避免冲突
+                rightPage.style.pointerEvents = 'none';
+
                 // 点击图片左右翻页
                 const leftPageEl = document.getElementById('left-page');
                 if (leftPageEl) {
@@ -974,6 +977,7 @@
                             if (currentIndex > 0) {
                                 currentIndex--;
                                 leftPageEl.onclick = null;
+                                rightPage.style.pointerEvents = '';
                                 updateScene();
                             }
                         } else {
@@ -981,6 +985,7 @@
                             if (currentIndex < script.length - 1) {
                                 currentIndex++;
                                 leftPageEl.onclick = null;
+                                rightPage.style.pointerEvents = '';
                                 updateScene();
                             }
                         }
@@ -1043,6 +1048,8 @@
                 book.onclick = null;
                 const leftPageEl = document.getElementById('left-page');
                 if (leftPageEl) leftPageEl.onclick = null;
+                // 恢复 right-page 点击
+                rightPage.style.pointerEvents = '';
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
