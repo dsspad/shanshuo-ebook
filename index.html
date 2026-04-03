@@ -953,19 +953,7 @@
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
-                // 全屏场景点击左侧返回上一页
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) {
-                    leftPageEl.onclick = function(e) {
-                        e.stopPropagation();
-                        console.log('Fullscreen left-page clicked');
-                        if (currentIndex > 0) {
-                            currentIndex--;
-                            leftPageEl.onclick = null;
-                            updateScene();
-                        }
-                    };
-                }
+
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
@@ -1021,8 +1009,6 @@
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除点击事件
                 book.onclick = null;
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) leftPageEl.onclick = null;
                 
                 if (scene.scene && sceneImages[scene.scene]) {
                     // 使用真实图片
@@ -1150,10 +1136,7 @@
             });
         }
 
-        // 调试：显示点击区域（开发时可见）
-        if (textOnlyPrev) {
-            textOnlyPrev.style.background = 'rgba(255,0,0,0.1)'; // 淡红色半透明
-        }
+
 
         // 键盘导航
         document.addEventListener('keydown', (e) => {
