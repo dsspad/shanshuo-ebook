@@ -491,6 +491,17 @@
                 font-size: 5px;
             }
         }
+
+        /* text-only场景的上一页点击区域 */
+        .text-only-prev {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30%;
+            height: 100%;
+            cursor: w-resize;
+            z-index: 10;
+        }
         
         #text .para {
             opacity: 0;
@@ -696,6 +707,7 @@
             <div id="text"></div>
             <div id="hint">点击右侧下一页，左侧上一页</div>
             <div id="page-num">1 / 50</div>
+            <div id="text-only-prev" class="text-only-prev" style="display:none;"></div>
         </div>
     </div>
 
@@ -839,9 +851,17 @@
                 cssScene.style.display = 'none';
                 sceneImage.classList.remove('active');
 
+                // 显示上一页点击区域
+                const prevBtn = document.getElementById('text-only-prev');
+                if (prevBtn) prevBtn.style.display = 'block';
+
                 // 更新右栏文字
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
+            } else {
+                // 隐藏上一页点击区域
+                const prevBtn = document.getElementById('text-only-prev');
+                if (prevBtn) prevBtn.style.display = 'none';
             }
             // 处理文字在右场景
             else if (scene.type === 'text-right') {
@@ -1025,6 +1045,18 @@
                 updateScene();
             }
         });
+
+        // text-only场景的上一页按钮
+        const textOnlyPrev = document.getElementById('text-only-prev');
+        if (textOnlyPrev) {
+            textOnlyPrev.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateScene();
+                }
+            });
+        }
 
         // 键盘导航
         document.addEventListener('keydown', (e) => {
