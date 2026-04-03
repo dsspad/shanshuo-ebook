@@ -962,30 +962,27 @@
                 speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
-                // 点击图片左右翻页
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) {
-                    leftPageEl.onclick = function(e) {
-                        const rect = leftPageEl.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const width = rect.width;
-                        if (x < width * 0.5) {
-                            // 左侧：上一页
-                            if (currentIndex > 0) {
-                                currentIndex--;
-                                leftPageEl.onclick = null;
-                                updateScene();
-                            }
-                        } else {
-                            // 右侧：下一页
-                            if (currentIndex < script.length - 1) {
-                                currentIndex++;
-                                leftPageEl.onclick = null;
-                                updateScene();
-                            }
+                // 整个页面点击：左侧30%上一页，右侧70%下一页
+                book.onclick = function(e) {
+                    const rect = book.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const width = rect.width;
+                    if (x < width * 0.3) {
+                        // 左侧30%：上一页
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            book.onclick = null;
+                            updateScene();
                         }
-                    };
-                }
+                    } else {
+                        // 右侧70%：下一页
+                        if (currentIndex < script.length - 1) {
+                            currentIndex++;
+                            book.onclick = null;
+                            updateScene();
+                        }
+                    }
+                };
             }
             // 处理封面场景 - 图片铺满整个页面
             else if (scene.type === 'cover') {
