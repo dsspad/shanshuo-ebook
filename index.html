@@ -928,6 +928,10 @@
                 book.classList.add('cover-fullscreen');
                 cssScene.style.display = 'none';
 
+                // 隐藏上一页按钮
+                const prevBtn = document.getElementById('text-only-prev');
+                if (prevBtn) prevBtn.style.display = 'none';
+
                 // 显示封面图片
                 if (scene.scene && sceneImages[scene.scene]) {
                     sceneImage.src = sceneImages[scene.scene];
