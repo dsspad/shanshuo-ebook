@@ -802,7 +802,7 @@
             { type: "scene", scene: "scene47", speaker: "", text: "或者等到黄花风铃木谢了、羊蹄甲落尽、电线塔上的藤蔓彻底枯死的时候。" },
             { type: "text-only", speaker: "", text: "她还会来。" },
             { type: "text-only", speaker: "", text: "第一章\n完" },
-            { type: "text-only", speaker: "", text: "本故事纯属虚构，所有虚构纯属巧合\n\n编辑/策划 无梦的深睡 SPAD织工团" }
+            { type: "text-only", speaker: "", text: "如有雷同，纯属巧合\n\n编辑/策划 无梦的深睡 SPAD织工团" }
         ];
 
         let currentIndex = 0;
@@ -946,6 +946,7 @@
             }
             // 处理全屏画面+文字悬浮
             else if (scene.type === 'fullscreen') {
+                console.log('ENTERING FULLSCREEN SCENE');
                 book.classList.add('fullscreen');
                 cssScene.style.display = 'none';
 
@@ -964,10 +965,13 @@
 
                 // 整个页面点击：左侧30%上一页，右侧70%下一页
                 book.onclick = function(e) {
+                    console.log('Fullscreen book clicked');
                     const rect = book.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const width = rect.width;
+                    console.log('Click position:', x, '/', width, '=', x/width);
                     if (x < width * 0.3) {
+                        console.log('Left 30%, go prev');
                         // 左侧30%：上一页
                         if (currentIndex > 0) {
                             currentIndex--;
@@ -975,6 +979,7 @@
                             updateScene();
                         }
                     } else {
+                        console.log('Right 70%, go next');
                         // 右侧70%：下一页
                         if (currentIndex < script.length - 1) {
                             currentIndex++;
@@ -1061,6 +1066,30 @@
                             sceneImage.style.height = 'auto';
                             sceneImage.style.maxWidth = '100%';
                             sceneImage.style.maxHeight = '100%';
+                            // 16:9场景使用图片左右翻页
+                            console.log('Setting book.onclick for 16:9 scene');
+                            book.onclick = function(e) {
+                                console.log('16:9 book clicked');
+                                const rect = book.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const width = rect.width;
+                                console.log('Click at:', x, 'width:', width, 'ratio:', x/width);
+                                if (x < width * 0.3) {
+                                    console.log('Left 30%, go prev');
+                                    if (currentIndex > 0) {
+                                        currentIndex--;
+                                        book.onclick = null;
+                                        updateScene();
+                                    }
+                                } else {
+                                    console.log('Right 70%, go next');
+                                    if (currentIndex < script.length - 1) {
+                                        currentIndex++;
+                                        book.onclick = null;
+                                        updateScene();
+                                    }
+                                }
+                            };
                         }
                     };
                 } else if (scene.type === 'computer') {
@@ -1116,9 +1145,9 @@
         rightPage.addEventListener('click', (e) => {
             const scene = script[currentIndex];
             console.log('rightPage clicked, currentIndex:', currentIndex, 'type:', scene?.type);
-            // fullscreen 场景使用图片点击翻页，禁用 right-page 点击
-            if (scene.type === 'fullscreen') {
-                console.log('Fullscreen scene, ignoring rightPage click');
+            // fullscreen 场景（包括自动检测的16:9图片）使用图片点击翻页
+            if (book.classList.contains('fullscreen')) {
+                console.log('Fullscreen class detected, ignoring rightPage click');
                 return;
             }
             if (isTyping) {
@@ -1144,9 +1173,14 @@
                 }
                 return;
             }
-            // fullscreen 场景使用图片点击翻页，禁用 leftPage 默认点击
-            if (scene.type === 'fullscreen') {
-                console.log('Fullscreen scene, ignoring leftPage click');
+            // fullscreen 场景（包括自动检测的16:9图片）使用图片点击翻页
+            if (book.classList.contains('fullscreen')) {
+                console.log('Fullscreen class detected, ignoring leftPage click');
+                return;
+            }
+            // text-only 场景禁用 leftPage 点击（使用 text-only-prev 按钮）
+            if (scene.type === 'text-only') {
+                console.log('Text-only scene, ignoring leftPage click');
                 return;
             }
             if (currentIndex > 0) {
