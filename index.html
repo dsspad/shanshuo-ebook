@@ -676,7 +676,7 @@
             cursor: pointer;
         }
         .cover-fullscreen #right-page {
-            display: none;
+            display: none !important;
         }
         .cover-fullscreen .scene-container {
             width: 100%;
@@ -862,6 +862,8 @@
                 // 隐藏上一页点击区域
                 const prevBtn = document.getElementById('text-only-prev');
                 if (prevBtn) prevBtn.style.display = 'none';
+                // 清除封面点击事件
+                book.onclick = null;
             }
             // 处理文字在右场景
             else if (scene.type === 'text-right') {
@@ -941,6 +943,16 @@
                 // 封面无文字
                 speakerEl.textContent = '';
                 textEl.textContent = '';
+
+                // 封面点击下一页 - 直接绑定到 book
+                book.onclick = function(e) {
+                    e.stopPropagation();
+                    if (currentIndex < script.length - 1) {
+                        currentIndex++;
+                        book.onclick = null; // 清除事件
+                        updateScene();
+                    }
+                };
             }
             else {
                 // 更新左栏场景 - 优先使用图片
