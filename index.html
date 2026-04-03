@@ -893,8 +893,7 @@
                 const backBtn = document.getElementById('back-to-cover');
                 if (backBtn) backBtn.style.display = 'none';
                 // 清除封面点击事件
-                const leftPageEl = document.getElementById('left-page');
-                if (leftPageEl) leftPageEl.onclick = null;
+                book.onclick = null;
             }
             // 处理文字在右场景
             else if (scene.type === 'text-right') {
@@ -967,29 +966,34 @@
 
                 // 显示封面图片
                 if (scene.scene && sceneImages[scene.scene]) {
+                    console.log('Loading cover image:', sceneImages[scene.scene]);
                     sceneImage.src = sceneImages[scene.scene];
                     sceneImage.classList.add('active');
+                    sceneImage.onload = function() {
+                        console.log('Cover image loaded successfully');
+                    };
+                    sceneImage.onerror = function() {
+                        console.error('Cover image failed to load');
+                        textEl.textContent = '封面加载失败，点击继续';
+                    };
+                } else {
+                    console.error('No cover image found');
+                    textEl.textContent = '封面未找到，点击继续';
                 }
 
                 // 封面无文字
                 speakerEl.textContent = '';
                 textEl.textContent = '';
 
-                // 封面点击下一页 - 绑定到 left-page
-                setTimeout(() => {
-                    const leftPageEl = document.getElementById('left-page');
-                    if (leftPageEl) {
-                        leftPageEl.onclick = function(e) {
-                            e.stopPropagation();
-                            console.log('Cover left-page clicked');
-                            if (currentIndex < script.length - 1) {
-                                currentIndex++;
-                                leftPageEl.onclick = null;
-                                updateScene();
-                            }
-                        };
+                // 封面点击下一页 - 直接绑定
+                book.onclick = function(e) {
+                    console.log('Cover book clicked');
+                    if (currentIndex < script.length - 1) {
+                        currentIndex++;
+                        book.onclick = null;
+                        updateScene();
                     }
-                }, 100);
+                };
             }
             else {
                 // 更新左栏场景 - 优先使用图片
