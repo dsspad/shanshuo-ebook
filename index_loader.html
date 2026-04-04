@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>山说 · 第一章 - 加载中</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f5f5f5; }
+        .loader { text-align: center; }
+        .progress { width: 300px; height: 4px; background: #ddd; margin: 20px auto; }
+        .bar { height: 100%; background: #333; width: 0%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <h2>山说 · 第一章</h2>
+        <p>正在加载资源...</p>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        <p id="status">0%</p>
+    </div>
+    <script>
+        const parts = ['index_standalone_partaa', 'index_standalone_partab', 'index_standalone_partac', 'index_standalone_partad'];
+        let loaded = 0;
+        let html = '';
+        
+        async function load() {
+            for (let i = 0; i < parts.length; i++) {
+                const res = await fetch(parts[i]);
+                const text = await res.text();
+                html += text;
+                loaded++;
+                const pct = Math.round((loaded / parts.length) * 100);
+                document.getElementById('bar').style.width = pct + '%';
+                document.getElementById('status').textContent = pct + '%';
+            }
+            document.open();
+            document.write(html);
+            document.close();
+        }
+        load();
+    </script>
+</body>
+</html>
