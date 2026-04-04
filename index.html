@@ -435,14 +435,6 @@
             position: relative;
         }
         
-        #speaker {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        
         #text {
             font-size: 16px;
             line-height: 1.8;
@@ -466,9 +458,6 @@
                 bottom: 15px;
                 left: 30px;
             }
-            #speaker {
-                font-size: 7px;
-            }
         }
 
         /* 竖屏时字体7px */
@@ -485,17 +474,14 @@
                 box-sizing: border-box;
             }
             #page-num {
-                font-size: 1px;
+                font-size: 2px;
                 bottom: 10px;
                 right: 20px;
             }
             #hint {
-                font-size: 1px;
+                font-size: 2px;
                 bottom: 10px;
                 left: 20px;
-            }
-            #speaker {
-                font-size: 5px;
             }
         }
 
@@ -729,11 +715,6 @@
             width: 100%;
             height: 100%;
         }
-        .fullscreen #speaker {
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-
         /* 手机横屏 fullscreen 字体 */
         @media screen and (max-width: 768px) {
             .fullscreen #text {
@@ -762,7 +743,6 @@
             </div>
         </div>
         <div id="right-page">
-            <div id="speaker"></div>
             <div id="text"></div>
             <div id="hint">点击右侧下一页，左侧上一页</div>
             <div id="page-num">1 / 50</div>
@@ -837,7 +817,6 @@
         const rightPage = document.getElementById('right-page');
         const sceneImage = document.getElementById('scene-image');
         const cssScene = document.getElementById('css-scene');
-        const speakerEl = document.getElementById('speaker');
         const textEl = document.getElementById('text');
         const pageNumEl = document.getElementById('page-num');
         const book = document.getElementById('book');
@@ -926,7 +905,6 @@
                 }
 
                 // 更新右栏文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
             } else if (scene.type === 'text-right') {
                 book.classList.add('text-right');
@@ -934,7 +912,6 @@
                 sceneImage.classList.remove('active');
 
                 // 更新右栏文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
             }
             // 处理文字在左、图片在右的跨页布局
@@ -942,9 +919,8 @@
                 book.classList.add('cross-page-text-left');
                 
                 // 左页显示文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
-                
+
                 // 右页显示图片 - 使用场景索引作为key查找图片
                 const sceneKey = 'scene' + (currentIndex + 1);
                 if (sceneImages[sceneKey]) {
@@ -956,7 +932,7 @@
             // 处理图片在左、文字在右的跨页布局
             else if (scene.type === 'image-left') {
                 book.classList.add('cross-page-image-left');
-                
+
                 // 左页显示图片 - 使用场景索引作为key查找图片
                 const sceneKey = 'scene' + (currentIndex + 1);
                 if (sceneImages[sceneKey]) {
@@ -964,9 +940,8 @@
                     sceneImage.classList.add('active');
                 }
                 cssScene.style.display = 'none';
-                
+
                 // 右页显示文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
             }
             // 处理全屏画面+文字悬浮
@@ -985,7 +960,6 @@
                 }
 
                 // 显示悬浮文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
 
                 // 整个页面点击：左侧30%上一页，右侧70%下一页
@@ -1029,7 +1003,6 @@
                     sceneImage.src = sceneImages[scene.scene];
                     sceneImage.classList.add('active');
                     // 封面无文字
-                    speakerEl.textContent = '';
                     textEl.textContent = '';
                     sceneImage.onload = function() {
                         console.log('Cover image loaded successfully');
@@ -1041,7 +1014,6 @@
                 } else {
                     console.error('No cover image found');
                     textEl.textContent = '封面未找到，点击继续';
-                    speakerEl.textContent = '';
                 }
 
                 // 封面点击下一页 - 直接绑定
@@ -1137,7 +1109,6 @@
                 }
                 
                 // 更新右栏文字
-                speakerEl.textContent = scene.speaker || '';
                 typeText(scene.text);
             }
         }
