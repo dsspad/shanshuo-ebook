@@ -568,6 +568,21 @@
             text-align: center;
             line-height: 1.8;
         }
+
+        /* 竖屏时 text-right 适配 */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            .text-right #right-page {
+                padding: 20px;
+            }
+            .text-right #text {
+                font-size: 7px;
+                line-height: 1.4;
+                max-width: 100%;
+                width: 100%;
+                padding: 0 10%;
+                box-sizing: border-box;
+            }
+        }
         
         /* 跨页布局 - 文字在左，图片在右 */
         .cross-page-text-left #left-page {
@@ -1267,6 +1282,6 @@
             }
         });
     </script>
-    <div id="version" style="position:fixed;bottom:5px;right:10px;font-size:10px;color:#999;z-index:9999;font-family:monospace;">v250404.7</div>
+    <div id="version" style="position:fixed;bottom:5px;right:10px;font-size:10px;color:#999;z-index:9999;font-family:monospace;">v250404.8</div>
 </body>
 </html>
