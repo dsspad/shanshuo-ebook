@@ -1012,15 +1012,7 @@
                     textEl.textContent = '封面未找到，点击继续';
                 }
 
-                // 封面点击下一页 - 直接绑定
-                book.onclick = function(e) {
-                    console.log('Cover book clicked');
-                    if (currentIndex < script.length - 1) {
-                        currentIndex++;
-                        book.onclick = null;
-                        updateScene();
-                    }
-                };
+                // 封面点击下一页 - 使用全局 leftPage 事件，不单独绑定
             } else {
                 // 更新左栏场景 - 优先使用图片
                 cssScene.style.display = 'none';
@@ -1270,6 +1262,6 @@
             }
         });
     </script>
-    <div id="version" style="position:fixed;bottom:5px;right:10px;font-size:10px;color:#999;z-index:9999;font-family:monospace;">v250404.3</div>
+    <div id="version" style="position:fixed;bottom:5px;right:10px;font-size:10px;color:#999;z-index:9999;font-family:monospace;">v250404.4</div>
 </body>
 </html>
