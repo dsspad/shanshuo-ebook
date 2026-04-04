@@ -751,6 +751,18 @@
         </div>
     </div>
 
+    <!-- 图片预加载界面 -->
+    <div id="loading-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:'Noto Serif SC', serif;">
+        <div style="text-align:center;">
+            <h2 style="font-size:24px; margin-bottom:20px; color:#333;">山说 · 第一章</h2>
+            <p style="font-size:14px; color:#666; margin-bottom:30px;">正在加载图片资源...</p>
+            <div style="width:300px; height:4px; background:#ddd; border-radius:2px; overflow:hidden;">
+                <div id="loading-bar" style="width:0%; height:100%; background:#333; transition:width 0.3s;"></div>
+            </div>
+            <p id="loading-text" style="font-size:12px; color:#999; margin-top:15px;">0 / 0</p>
+        </div>
+    </div>
+
     <script>
         // 剧本数据
         const script = [
@@ -1221,10 +1233,53 @@
             }
         });
 
-        // 初始化 - 延迟执行确保DOM完全加载
+        // 图片预加载功能
+        function preloadImages() {
+            const images = Object.values(sceneImages);
+            const total = images.length;
+            let loaded = 0;
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            const loadingScreen = document.getElementById('loading-screen');
+
+            loadingText.textContent = `0 / ${total}`;
+
+            return Promise.all(images.map(src => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        loaded++;
+                        const percent = (loaded / total) * 100;
+                        loadingBar.style.width = percent + '%';
+                        loadingText.textContent = `${loaded} / ${total}`;
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        loaded++;
+                        const percent = (loaded / total) * 100;
+                        loadingBar.style.width = percent + '%';
+                        loadingText.textContent = `${loaded} / ${total}`;
+                        console.error('图片加载失败:', src);
+                        resolve(); // 即使失败也继续
+                    };
+                    img.src = src;
+                });
+            })).then(() => {
+                // 所有图片加载完成，隐藏加载界面
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            });
+        }
+
+        // 初始化 - 先预加载图片，再显示内容
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                updateScene();
+                preloadImages().then(() => {
+                    updateScene();
+                });
             } catch (e) {
                 console.error('初始化错误:', e);
                 document.body.innerHTML = '<div style="padding:20px;color:red;">加载出错: ' + e.message + '</div>';
