@@ -26,24 +26,23 @@
             body::before {
                 content: '建议横屏阅读以获得最佳体验';
                 position: fixed;
-                bottom: 60px;
+                top: 10px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: rgba(0,0,0,0.6);
+                background: rgba(0,0,0,0.7);
                 color: #fff;
-                padding: 6px 12px;
+                padding: 8px 16px;
                 border-radius: 4px;
-                font-size: 12px;
+                font-size: 14px;
                 z-index: 9999;
                 pointer-events: none;
-                white-space: nowrap;
             }
             #book {
                 width: 95vw;
                 height: auto;
                 aspect-ratio: 3 / 2;
-                max-height: 75vh;
-                margin-top: 20px;
+                max-height: 70vh;
+                margin-top: 50px;
             }
         }
         
@@ -451,33 +450,39 @@
             max-width: 400px;
         }
 
-        /* 手机端字体调整 */
+        /* 手机端字体调整 - 横屏8px */
         @media screen and (max-width: 768px) {
             #text {
-                font-size: 12px;
-                line-height: 1.6;
+                font-size: 8px;
+                line-height: 1.4;
             }
             #page-num {
-                font-size: 10px;
+                font-size: 6px;
                 bottom: 15px;
                 right: 30px;
             }
             #hint {
-                font-size: 8px;
+                font-size: 3px;
                 bottom: 15px;
                 left: 30px;
             }
             #speaker {
-                font-size: 11px;
+                font-size: 7px;
             }
         }
 
-        /* 竖屏时字体 */
+        /* 竖屏时字体7px */
         @media screen and (orientation: portrait) and (max-width: 768px) {
+            #right-page {
+                padding: 20px;
+            }
             #text {
-                font-size: 6px;
+                font-size: 7px;
                 line-height: 1.4;
-                max-width: 80%;
+                max-width: 100%;
+                width: 100%;
+                padding: 0 10%;
+                box-sizing: border-box;
             }
             #page-num {
                 font-size: 5px;
@@ -485,7 +490,7 @@
                 right: 20px;
             }
             #hint {
-                font-size: 4px;
+                font-size: 1.5px;
                 bottom: 10px;
                 left: 20px;
             }
@@ -536,25 +541,8 @@
             position: absolute;
             bottom: 30px;
             right: 60px;
-            font-size: 10px;
+            font-size: 12px;
             color: #999;
-        }
-        
-        /* 手机端页码更小 */
-        @media screen and (max-width: 768px) {
-            #page-num {
-                font-size: 8px;
-                bottom: 15px;
-                right: 30px;
-            }
-        }
-        
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            #page-num {
-                font-size: 7px;
-                bottom: 10px;
-                right: 20px;
-            }
         }
         
         /* 无图文字场景 - 整页居中 */
@@ -637,19 +625,12 @@
         }
         .cross-page-image-left #right-page {
             width: 50%;
-            padding: 40px;
+            padding: 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             cursor: e-resize;
             background: #fff;
-        }
-        
-        /* 竖屏时减少 padding */
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            .cross-page-image-left #right-page {
-                padding: 20px;
-            }
         }
         .cross-page-image-left .scene-container {
             width: 75%;
@@ -661,25 +642,8 @@
             position: absolute;
             bottom: 30px;
             left: 60px;
-            font-size: 10px;
+            font-size: 12px;
             color: #ccc;
-        }
-
-        /* 手机端提示更小 */
-        @media screen and (max-width: 768px) {
-            #hint {
-                font-size: 8px;
-                bottom: 15px;
-                left: 30px;
-            }
-        }
-
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            #hint {
-                font-size: 7px;
-                bottom: 10px;
-                left: 20px;
-            }
         }
         
         /* 全屏画面+文字悬浮 - 铺满3:2框 */
@@ -708,25 +672,6 @@
         .fullscreen #text {
             max-width: 80%;
             text-align: center;
-            font-size: 16px;
-            line-height: 1.8;
-        }
-
-        /* 手机端 fullscreen 字体 */
-        @media screen and (max-width: 768px) {
-            .fullscreen #text {
-                font-size: 10px;
-                line-height: 1.5;
-                max-width: 85%;
-            }
-        }
-
-        @media screen and (orientation: portrait) and (max-width: 768px) {
-            .fullscreen #text {
-                font-size: 8px;
-                line-height: 1.4;
-                max-width: 90%;
-            }
         }
         .fullscreen #page-num {
             position: absolute;
@@ -787,6 +732,15 @@
         .fullscreen #speaker {
             color: #fff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        /* 竖屏 fullscreen 字体 */
+        @media screen and (orientation: portrait) and (max-width: 768px) {
+            .fullscreen #text {
+                font-size: 7px;
+                line-height: 1.4;
+                padding: 15px 20px;
+            }
         }
     </style>
 </head>
@@ -1002,30 +956,9 @@
                 }
                 cssScene.style.display = 'none';
                 
-                // 右页显示文字 - 等待图片加载完成后再显示
-                if (sceneImage.complete && sceneImage.naturalWidth !== 0) {
-                    // 图片已缓存，直接显示文字
-                    speakerEl.textContent = scene.speaker || '';
-                    typeText(scene.text);
-                } else {
-                    // 图片未加载，等待加载完成
-                    speakerEl.textContent = '';
-                    textEl.textContent = '';
-                    sceneImage.onload = function() {
-                        // 延迟500ms显示文字，确保图片渲染完成
-                        setTimeout(() => {
-                            speakerEl.textContent = scene.speaker || '';
-                            typeText(scene.text);
-                        }, 500);
-                    };
-                }
-                
-                // 预加载下一页图片
-                const nextScene = script[currentIndex + 1];
-                if (nextScene && nextScene.scene && sceneImages[nextScene.scene]) {
-                    const nextImg = new Image();
-                    nextImg.src = sceneImages[nextScene.scene];
-                }
+                // 右页显示文字
+                speakerEl.textContent = scene.speaker || '';
+                typeText(scene.text);
             }
             // 处理全屏画面+文字悬浮
             else if (scene.type === 'fullscreen') {
@@ -1308,90 +1241,16 @@
             }
         });
 
-        // 预加载所有图片，显示封面
-        function preloadImages() {
-            const images = Object.values(sceneImages);
-            let loaded = 0;
-            const total = images.length;
-            
-            // 显示封面和加载提示
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loading';
-            loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a1a;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;';
-            loadingDiv.innerHTML = `
-                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
-                <div style="color:#fff;font-size:14px;margin-bottom:10px;">加载中... <span id="loading-progress">0 / ${total}</span></div>
-                <div style="color:#666;font-size:12px;">请稍候，精彩即将呈现</div>
-            `;
-            document.body.appendChild(loadingDiv);
-            
-            return new Promise((resolve) => {
-                if (images.length === 0) {
-                    loadingDiv.remove();
-                    resolve();
-                    return;
-                }
-                
-                images.forEach(src => {
-                    const img = new Image();
-                    img.onload = () => {
-                        loaded++;
-                        const progressEl = document.getElementById('loading-progress');
-                        if (progressEl) progressEl.textContent = loaded + ' / ' + total;
-                        if (loaded >= total) {
-                            // 显示点击提示
-                            loadingDiv.innerHTML = `
-                                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
-                                <div style="color:#999;font-size:14px;">点击任意处开始阅读</div>
-                            `;
-                            loadingDiv.style.cursor = 'pointer';
-                            loadingDiv.onclick = () => {
-                                loadingDiv.style.opacity = '0';
-                                loadingDiv.style.transition = 'opacity 0.5s';
-                                setTimeout(() => {
-                                    loadingDiv.remove();
-                                    currentIndex = 1; // 直接进入第一章
-                                    resolve();
-                                }, 500);
-                            };
-                        }
-                    };
-                    img.onerror = () => {
-                        loaded++;
-                        console.log('Failed to load:', src);
-                        if (loaded >= total) {
-                            loadingDiv.innerHTML = `
-                                <img src="images/cover_new.jpg" style="max-width:80%;max-height:60%;object-fit:contain;margin-bottom:30px;opacity:0.9;">
-                                <div style="color:#999;font-size:14px;">点击任意处开始阅读</div>
-                            `;
-                            loadingDiv.style.cursor = 'pointer';
-                            loadingDiv.onclick = () => {
-                                loadingDiv.style.opacity = '0';
-                                loadingDiv.style.transition = 'opacity 0.5s';
-                                setTimeout(() => {
-                                    loadingDiv.remove();
-                                    currentIndex = 1; // 直接进入第一章
-                                }, 500);
-                            };
-                        }
-                    };
-                    img.src = src;
-                });
-            });
-        }
-
         // 初始化 - 延迟执行确保DOM完全加载
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                // 先预加载所有图片，再显示内容
-                preloadImages().then(() => {
-                    updateScene();
-                });
+                updateScene();
             } catch (e) {
                 console.error('初始化错误:', e);
                 document.body.innerHTML = '<div style="padding:20px;color:red;">加载出错: ' + e.message + '</div>';
             }
         });
     </script>
+    <div id="version" style="position:fixed;bottom:5px;right:10px;font-size:10px;color:#999;z-index:9999;font-family:monospace;">v250404.1</div>
 </body>
 </html>
